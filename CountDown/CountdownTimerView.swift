@@ -16,10 +16,14 @@ struct CountdownTimerView: View {
                 .opacity(timerModel.backgroundOpacity)
                 .edgesIgnoringSafeArea(.all)
             
-            VStack(spacing: 8) {
+            VStack(spacing: 4) {
                 TimerView()
                 StatusView()
                 TimerInputView()
+            }
+        }
+        .toolbar {
+            ToolbarItemGroup(placement: .automatic) {
                 TimerControlsView(isPresentingSettings: $isPresentingSettings)
             }
         }

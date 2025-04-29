@@ -7,6 +7,8 @@ struct TimerControlsView: View {
     @Binding var isPresentingSettings: Bool
     
     var body: some View {
+        Spacer()
+
         HStack(spacing: 8) {
             Button(action: {
                 withAnimation {
@@ -58,8 +60,6 @@ struct TimerControlsView: View {
                     NSCursor.pop()
                 }
             }
-
-            Spacer()
 
             Button(action: {
                 withAnimation {
