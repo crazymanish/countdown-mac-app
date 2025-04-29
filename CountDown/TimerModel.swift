@@ -25,7 +25,15 @@ class TimerModel: ObservableObject {
     
     // For system integration
     @Published var showInDock: Bool = true
-    @Published var showInMenuBar: Bool = true
+    @Published var showInMenuBar: Bool = true {
+        didSet {
+            if showInMenuBar {
+                setupMenuBarItem()
+            } else {
+                removeMenuBarItem()
+            }
+        }
+    }
     
     private var statusItem: NSStatusItem?
     
@@ -55,16 +63,17 @@ class TimerModel: ObservableObject {
         // Invalidate any existing timer
         timer?.invalidate()
         
-        // Create a new timer that fires every 0.1 seconds
-        timer = Timer.scheduledTimer(withTimeInterval: 0.1, repeats: true) { [weak self] _ in
-            guard let self = self else { return }
-            
-            if self.timeRemaining > 0.1 {
-                self.timeRemaining -= 0.1
-                self.updateDockAndMenuBar()
-            } else {
-                self.timerCompleted()
-            }
+        // Create a new timer that fires every 0.1 seconds and add it to the main run loop
+        timer = Timer(timeInterval: 0.1, target: self, selector: #selector(updateTimer), userInfo: nil, repeats: true)
+        RunLoop.main.add(timer!, forMode: .common)
+    }
+    
+    @objc private func updateTimer() {
+        if self.timeRemaining > 0.1 {
+            self.timeRemaining -= 0.1
+            self.updateDockAndMenuBar()
+        } else {
+            self.timerCompleted()
         }
     }
     
@@ -276,14 +285,29 @@ class TimerModel: ObservableObject {
     
     private func setupMenuBarItem() {
         DispatchQueue.main.async {
+            // Remove existing status item if any
+            self.removeMenuBarItem()
+            
             self.statusItem = NSStatusBar.system.statusItem(withLength: NSStatusItem.variableLength)
             self.statusItem?.button?.title = "--:--"
             
             let menu = NSMenu()
-            menu.addItem(NSMenuItem(title: "Start/Pause", action: #selector(NSApplication.shared.sendAction(_:to:from:)), keyEquivalent: ""))
-            menu.addItem(NSMenuItem(title: "Reset", action: #selector(NSApplication.shared.sendAction(_:to:from:)), keyEquivalent: ""))
+            
+            // Start/Pause item with target action
+            let startPauseItem = NSMenuItem(title: "Start/Pause", action: #selector(self.menuBarToggleTimer), keyEquivalent: "p")
+            startPauseItem.target = self
+            menu.addItem(startPauseItem)
+            
+            // Reset item with target action
+            let resetItem = NSMenuItem(title: "Reset", action: #selector(self.menuBarResetTimer), keyEquivalent: "r")
+            resetItem.target = self
+            menu.addItem(resetItem)
+            
             menu.addItem(NSMenuItem.separator())
-            menu.addItem(NSMenuItem(title: "Quit", action: #selector(NSApplication.shared.terminate(_:)), keyEquivalent: "q"))
+            
+            // Quit item
+            let quitItem = NSMenuItem(title: "Quit", action: #selector(NSApplication.shared.terminate(_:)), keyEquivalent: "q")
+            menu.addItem(quitItem)
             
             self.statusItem?.menu = menu
             
@@ -292,8 +316,23 @@ class TimerModel: ObservableObject {
         }
     }
     
+    // Action methods for menu bar items
+    @objc private func menuBarToggleTimer() {
+        toggleTimer()
+    }
+    
+    @objc private func menuBarResetTimer() {
+        resetTimer()
+    }
+    
     private func updateMenuBarItem() {
         DispatchQueue.main.async {
+            // Ensure the status item exists
+            if self.statusItem == nil && self.showInMenuBar {
+                self.setupMenuBarItem()
+                return
+            }
+            
             if let button = self.statusItem?.button {
                 if self.timeRemaining > 0 {
                     button.title = self.formattedTime(self.timeRemaining)
