@@ -1,11 +1,14 @@
 import SwiftUI
 import UserNotifications
+import Observation
 
 struct TimerInputView: View {
-    @EnvironmentObject private var timerModel: TimerModel
+    @Environment(TimerModel.self) private var timerModel
     @FocusState private var isInputFieldFocused: Bool
     
     var body: some View {
+        @Bindable var timerModel = timerModel
+
         HStack(spacing: 8) {
             TextField("Duration (10m, 3pm, 1hr)", text: $timerModel.inputText)
                 .font(.system(size: 10))
@@ -80,5 +83,5 @@ struct TimerInputView: View {
 
 #Preview {
     TimerInputView()
-        .environmentObject(TimerModel())
+        .environment(TimerModel())
 }

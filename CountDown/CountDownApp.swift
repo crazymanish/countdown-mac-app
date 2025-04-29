@@ -8,12 +8,12 @@ struct CountDownApp: App {
             updateLaunchAtLogin()
         }
     }
-    @StateObject private var timerModel = TimerModel()
+    private var timerModel = TimerModel()
     
     var body: some Scene {
         WindowGroup {
             CountdownTimerView()
-                .environmentObject(timerModel)
+                .environment(timerModel)
                 .preferredColorScheme(.none) // Supports both light and dark mode
         }
         .windowStyle(HiddenTitleBarWindowStyle()) // Clean window style

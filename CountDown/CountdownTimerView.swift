@@ -1,12 +1,15 @@
 import SwiftUI
 import UserNotifications
 import AppKit
+import Observation
 
 struct CountdownTimerView: View {
-    @EnvironmentObject private var timerModel: TimerModel
+    @Environment(TimerModel.self) private var timerModel
     @State private var isPresentingSettings = false
     
     var body: some View {
+        @Bindable var timerModel = timerModel
+
         ZStack {
             // Background with custom color and opacity
             timerModel.backgroundColor
@@ -22,7 +25,6 @@ struct CountdownTimerView: View {
         }
         .sheet(isPresented: $isPresentingSettings) {
             SettingsView()
-                .environmentObject(timerModel)
         }
         .frame(width: 150)
         .windowLevel(alwaysOnTop: $timerModel.windowAlwaysOnTop)
@@ -33,7 +35,7 @@ struct CountdownTimerView: View {
 struct CountdownTimerView_Previews: PreviewProvider {
     static var previews: some View {
         CountdownTimerView()
-            .environmentObject(TimerModel())
+            .environment(TimerModel())
             .preferredColorScheme(.dark)
     }
 }

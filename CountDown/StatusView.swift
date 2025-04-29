@@ -1,7 +1,7 @@
 import SwiftUI
 
 struct StatusView: View {
-    @EnvironmentObject private var timerModel: TimerModel
+    @Environment(TimerModel.self) private var timerModel
     
     var body: some View {
         if (!timerModel.completionMessage.isEmpty) {
@@ -29,5 +29,5 @@ struct StatusView: View {
 
 #Preview {
     StatusView()
-        .environmentObject(TimerModel())
+        .environment(TimerModel())
 }

@@ -2,31 +2,33 @@ import SwiftUI
 import AVFoundation
 import UserNotifications
 import AppKit
+import Observation
 
-class TimerModel: ObservableObject {
-    @Published var timeRemaining: TimeInterval = 0
-    @Published var targetDuration: TimeInterval = 0
-    @Published var isRunning = false
-    @Published var inputText = ""
-    @Published var statusMessage = ""
-    @Published var completionMessage = ""
-    @Published var selectedSound: String = "Default"
-    @Published var inputHistory: [String] = []
-    @Published var historyIndex: Int = -1
-    @Published var shouldFocusInput: Bool = true // New property to control input field focus
+@Observable
+class TimerModel {
+    var timeRemaining: TimeInterval = 0
+    var targetDuration: TimeInterval = 0
+    var isRunning = false
+    var inputText = ""
+    var statusMessage = ""
+    var completionMessage = ""
+    var selectedSound: String = "Default"
+    var inputHistory: [String] = []
+    var historyIndex: Int = -1
+    var shouldFocusInput: Bool = true // New property to control input field focus
     
     private var timer: Timer?
     private var audioPlayer: AVAudioPlayer?
     private var soundOptions = ["Default", "Subtle", "Loud", "Gentle"]
     
     // For window customization
-    @Published var backgroundColor: Color = .clear
-    @Published var backgroundOpacity: Double = 0.9
-    @Published var windowAlwaysOnTop: Bool = true
+    var backgroundColor: Color = .clear
+    var backgroundOpacity: Double = 0.9
+    var windowAlwaysOnTop: Bool = true
     
     // For system integration
-    @Published var showInDock: Bool = true
-    @Published var showInMenuBar: Bool = true {
+    var showInDock: Bool = true
+    var showInMenuBar: Bool = true {
         didSet {
             if showInMenuBar {
                 setupMenuBarItem()

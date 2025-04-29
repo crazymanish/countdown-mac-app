@@ -1,9 +1,10 @@
 import SwiftUI
 import UserNotifications
 import AppKit
+import Observation
 
 struct SettingsView: View {
-    @EnvironmentObject private var timerModel: TimerModel
+    @Environment(TimerModel.self) private var timerModel
     @Environment(\.dismiss) private var dismiss
     @AppStorage("launchAtLogin") private var launchAtLogin = false
 
@@ -12,6 +13,8 @@ struct SettingsView: View {
     @State private var slideOffset: CGFloat = 0
 
     var body: some View {
+        @Bindable var timerModel = timerModel
+
         NavigationStack {
             VStack(spacing: 0) {
                 // Custom segmented control

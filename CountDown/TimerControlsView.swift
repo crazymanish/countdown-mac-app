@@ -2,7 +2,7 @@ import SwiftUI
 import AppKit
 
 struct TimerControlsView: View {
-    @EnvironmentObject private var timerModel: TimerModel
+    @Environment(TimerModel.self) private var timerModel
     @State private var rotationDegrees: Double = 0
     @Binding var isPresentingSettings: Bool
     
@@ -88,9 +88,7 @@ struct TimerControlsView: View {
     }
 }
 
-struct TimerControlsView_Previews: PreviewProvider {
-    static var previews: some View {
-        TimerControlsView(isPresentingSettings: .constant(false))
-            .environmentObject(TimerModel())
-    }
+#Preview {
+    TimerControlsView(isPresentingSettings: .constant(false))
+        .environment(TimerModel())
 }

@@ -1,7 +1,7 @@
 import SwiftUI
 
 struct TimerView: View {
-    @EnvironmentObject private var timerModel: TimerModel
+    @Environment(TimerModel.self) private var timerModel
     @State private var isTimerPulsing = false
     
     var body: some View {
@@ -76,5 +76,5 @@ struct TimerView: View {
 
 #Preview {
     TimerView()
-        .environmentObject(TimerModel())
+        .environment(TimerModel())
 }
