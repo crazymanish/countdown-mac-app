@@ -169,9 +169,15 @@ struct ContentView: View {
                     timerModel.parseInput()
                 }
             }) {
-                Image(systemName: "arrow.right.circle.fill")
-                    .font(.system(size: 18))
-                    .foregroundColor(.accentColor)
+                Circle()
+                    .fill(Color.blue.opacity(0.2))
+                    .frame(width: 24, height: 24)
+                    .overlay(
+                        Image(systemName: "arrow.right")
+                            .font(.system(size: 12))
+                            .symbolRenderingMode(.hierarchical)
+                            .foregroundStyle(.white)
+                    )
             }
             .buttonStyle(.plain)
             .keyboardShortcut(.return, modifiers: [])
@@ -185,10 +191,14 @@ struct ContentView: View {
                     timerModel.toggleTimer()
                 }
             }) {
-                Image(systemName: timerModel.isRunning ? "pause.circle.fill" : "play.circle.fill")
-                    .font(.system(size: 18))
-                    .symbolRenderingMode(.hierarchical)
-                    .foregroundStyle(.blue)
+                Circle()
+                    .fill(Color.blue.opacity(0.2))
+                    .frame(width: 24, height: 24)
+                    .overlay(
+                        Image(systemName: timerModel.isRunning ? "pause.fill" : "play.fill")
+                            .foregroundColor(.blue)
+                            .font(.system(size: 12))
+                    )
             }
             .keyboardShortcut(.space, modifiers: [])
             .buttonStyle(.plain)
@@ -206,11 +216,16 @@ struct ContentView: View {
                     timerModel.resetTimer()
                 }
             }) {
-                Image(systemName: "arrow.counterclockwise.circle.fill")
-                    .font(.system(size: 18))
-                    .symbolRenderingMode(.hierarchical)
-                    .foregroundStyle(.purple)
-                    .rotationEffect(.degrees(rotationDegrees))
+                Circle()
+                    .fill(Color.blue.opacity(0.2))
+                    .frame(width: 24, height: 24)
+                    .overlay(
+                        Image(systemName: "arrow.counterclockwise")
+                            .font(.system(size: 12))
+                            .symbolRenderingMode(.hierarchical)
+                            .foregroundStyle(.purple)
+                            .rotationEffect(.degrees(rotationDegrees))
+                    )
             }
             .keyboardShortcut("r", modifiers: .command)
             .buttonStyle(.plain)
@@ -229,10 +244,15 @@ struct ContentView: View {
                     isPresentingSettings.toggle()
                 }
             }) {
-                Image(systemName: "gear")
-                    .font(.system(size: 18))
-                    .symbolRenderingMode(.hierarchical)
-                    .foregroundStyle(.gray)
+                Circle()
+                    .fill(Color.blue.opacity(0.2))
+                    .frame(width: 24, height: 24)
+                    .overlay(
+                        Image(systemName: "gear")
+                            .font(.system(size: 12))
+                            .symbolRenderingMode(.hierarchical)
+                            .foregroundStyle(.gray)
+                    )
             }
             .buttonStyle(.plain)
             .onHover { hovering in
