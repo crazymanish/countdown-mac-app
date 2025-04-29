@@ -31,6 +31,10 @@ struct ContentView: View {
         }
         .frame(width: 150)
         .windowLevel(alwaysOnTop: $timerModel.windowAlwaysOnTop)
+        .onChange(of: timerModel.shouldFocusInput) { oldValue, newValue in
+            // Sync FocusState with the TimerModel's shouldFocusInput property
+            isInputFieldFocused = newValue
+        }
     }
 
     private var timerView: some View {
@@ -38,11 +42,11 @@ struct ContentView: View {
         VStack(spacing: 5) {
             // Time text
             Text(formatTimeHorizontal(timerModel.timeRemaining))
-                .font(.system(size: 28, weight: .semibold, design: .rounded))
+                .font(.system(size: 28, weight: .bold, design: .rounded))
                 .monospacedDigit()
                 .contentTransition(.numericText())
                 .animation(.spring(response: 0.4, dampingFraction: 0.8), value: timerModel.timeRemaining)
-                .scaleEffect(isTimerPulsing ? 1.05 : 1.0)
+                .scaleEffect(isTimerPulsing ? 1.25 : 1.0)
                 .animation(
                     timerModel.isRunning ?
                     Animation.easeInOut(duration: 1.0).repeatForever(autoreverses: true) :
@@ -116,8 +120,7 @@ struct ContentView: View {
         HStack(spacing: 2) {
             TextField("Duration (10m, 3pm, 1hr)", text: $timerModel.inputText)
                 .font(.system(size: 10))
-                .padding(.vertical, 5)
-                .padding(.horizontal, 8)
+                .padding([.vertical, .horizontal], 2)
                 .background(
                     RoundedRectangle(cornerRadius: 4)
                         .fill(Color.primary.opacity(0.05))
@@ -127,6 +130,7 @@ struct ContentView: View {
                 .onSubmit {
                     withAnimation {
                         timerModel.parseInput()
+                        isInputFieldFocused = false // Turn off focus after submitting
                     }
                 }
                 .focused($isInputFieldFocused)
@@ -155,6 +159,9 @@ struct ContentView: View {
                         return .handled
                     }
                     return .ignored
+                }
+                .onTapGesture {
+                    isInputFieldFocused = true // Ensure focus when manually tapped
                 }
 
             Button(action: {

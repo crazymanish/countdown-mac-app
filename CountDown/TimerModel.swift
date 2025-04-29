@@ -13,6 +13,7 @@ class TimerModel: ObservableObject {
     @Published var selectedSound: String = "Default"
     @Published var inputHistory: [String] = []
     @Published var historyIndex: Int = -1
+    @Published var shouldFocusInput: Bool = true // New property to control input field focus
     
     private var timer: Timer?
     private var audioPlayer: AVAudioPlayer?
@@ -59,6 +60,7 @@ class TimerModel: ObservableObject {
         }
         
         isRunning = true
+        shouldFocusInput = false // Turn off focus when timer starts
         
         // Invalidate any existing timer
         timer?.invalidate()
@@ -101,6 +103,7 @@ class TimerModel: ObservableObject {
         isRunning = false
         timer?.invalidate()
         completionMessage = "Countdown completed!"
+        shouldFocusInput = true // Return focus to input field when timer completes
         
         // Play bell sound alert
         SoundManager.shared.play(sound: "Bell")
