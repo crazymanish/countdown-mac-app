@@ -12,7 +12,7 @@ struct CountDownApp: App {
     
     var body: some Scene {
         WindowGroup {
-            ContentView()
+            CountdownTimerView()
                 .environmentObject(timerModel)
                 .preferredColorScheme(.none) // Supports both light and dark mode
         }

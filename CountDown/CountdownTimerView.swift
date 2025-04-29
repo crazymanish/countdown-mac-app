@@ -2,7 +2,7 @@ import SwiftUI
 import UserNotifications
 import AppKit
 
-struct ContentView: View {
+struct CountdownTimerView: View {
     @EnvironmentObject private var timerModel: TimerModel
     @State private var isPresentingSettings = false
     
@@ -30,9 +30,9 @@ struct ContentView: View {
 }
 
 // Preview for development
-struct ContentView_Previews: PreviewProvider {
+struct CountdownTimerView_Previews: PreviewProvider {
     static var previews: some View {
-        ContentView()
+        CountdownTimerView()
             .environmentObject(TimerModel())
             .preferredColorScheme(.dark)
     }
