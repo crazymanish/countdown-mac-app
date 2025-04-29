@@ -7,11 +7,11 @@ struct StatusView: View {
         if (!timerModel.completionMessage.isEmpty) {
             Text(timerModel.completionMessage)
                 .font(.system(size: 14, weight: .medium))
-                .foregroundColor(.white)
+                .foregroundStyle(LinearGradient.appGradient)
                 .padding(.horizontal, 10)
                 .background(
                     RoundedRectangle(cornerRadius: 6)
-                        .fill(Color.blue.opacity(0.5))
+                        .fill(Color.primary.opacity(0.1))
                 )
                 .lineLimit(1)
                 .transition(.opacity)

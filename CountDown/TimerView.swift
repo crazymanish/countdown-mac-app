@@ -11,6 +11,7 @@ struct TimerView: View {
                 .font(.system(size: 24, weight: .bold, design: .rounded))
                 .monospacedDigit()
                 .contentTransition(.numericText())
+                .foregroundStyle(LinearGradient.appGradient)
                 .animation(.spring(response: 0.4, dampingFraction: 1.0), value: timerModel.timeRemaining)
                 .scaleEffect(isTimerPulsing ? 1.25 : 1.0)
                 .animation(
@@ -30,13 +31,7 @@ struct TimerView: View {
 
                 // Foreground progress bar
                 Rectangle()
-                    .fill(
-                        LinearGradient(
-                            gradient: Gradient(colors: [.pink, .purple]),
-                            startPoint: .leading,
-                            endPoint: .trailing
-                        )
-                    )
+                    .fill(LinearGradient.appGradient)
                     .frame(
                         width: timerModel.targetDuration > 0
                             ? CGFloat(timerModel.timeRemaining / timerModel.targetDuration) * 180
