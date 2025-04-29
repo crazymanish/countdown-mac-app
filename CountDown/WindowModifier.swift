@@ -3,7 +3,7 @@ import AppKit
 
 // Window level preference key to pass the level through the view hierarchy
 struct WindowLevelKey: PreferenceKey {
-    static var defaultValue: NSWindow.Level = .normal
+    static let defaultValue: NSWindow.Level = .normal
     
     static func reduce(value: inout NSWindow.Level, nextValue: () -> NSWindow.Level) {
         value = nextValue()
