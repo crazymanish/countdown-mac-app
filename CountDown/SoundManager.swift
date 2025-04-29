@@ -1,13 +1,15 @@
 import Foundation
 import AVFoundation
 
-class SoundManager {
+actor SoundManager {
     static let shared = SoundManager()
     
     private var players: [String: AVAudioPlayer] = [:]
     
     private init() {
-        preloadSounds()
+        Task {
+            await preloadSounds()
+        }
     }
     
     private func preloadSounds() {

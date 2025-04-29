@@ -5,6 +5,7 @@ import AppKit
 import Observation
 
 @Observable
+@MainActor
 class TimerModel {
     var timeRemaining: TimeInterval = 0
     var targetDuration: TimeInterval = 0
@@ -36,29 +37,29 @@ class TimerModel {
     
     private func loadSoundOptions() {
         // Get available sounds from SoundManager
-        soundOptions = SoundManager.shared.getAllSoundNames()
+        Task {
+            soundOptions = await SoundManager.shared.getAllSoundNames()
+        }
     }
     
     private func createTimerTask() {
         // Only create a new task if one doesn't exist
         guard timerTask == nil else { return }
         
-        timerTask = Task {
+        timerTask = Task { @MainActor in
             while !Task.isCancelled {
                 if isRunning && timeRemaining > 0 {
                     // Timer is running, update time
                     if self.timeRemaining > 0.1 {
                         self.timeRemaining -= 0.1
                     } else {
-                        await MainActor.run {
-                            self.timerCompleted()
-                        }
+                        self.timerCompleted()
                     }
                     // Sleep for 0.1 seconds
-                    try? await Task.sleep(nanoseconds: 100_000_000) // 0.1 seconds
+                    try? await Task.sleep(for: .milliseconds(100))
                 } else {
                     // Timer is paused, sleep briefly to avoid high CPU usage
-                    try? await Task.sleep(nanoseconds: 100_000_000) // 0.1 seconds
+                    try? await Task.sleep(for: .milliseconds(100))
                 }
             }
         }
@@ -103,7 +104,9 @@ class TimerModel {
         shouldFocusInput = true // Return focus to input field when timer completes
         
         // Play bell sound alert
-        SoundManager.shared.play(sound: "Bell")
+        Task {
+            await SoundManager.shared.play(sound: "Bell")
+        }
         
         // Display system notification
         sendNotification()
@@ -248,7 +251,9 @@ class TimerModel {
     
     func playCompletionSound() {
         // Use the SoundManager to play the selected sound
-        SoundManager.shared.play(sound: selectedSound)
+        Task {
+            await SoundManager.shared.play(sound: selectedSound)
+        }
     }
     
     func sendNotification() {

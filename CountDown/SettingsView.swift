@@ -6,10 +6,11 @@ import Observation
 struct SettingsView: View {
     @Environment(TimerModel.self) private var timerModel
     @Environment(\.dismiss) private var dismiss
-
+    
     // Animation states
     @State private var selectedTab = 0
     @State private var slideOffset: CGFloat = 0
+    @State private var soundNames: [String] = []
 
     var body: some View {
         @Bindable var timerModel = timerModel
@@ -76,10 +77,9 @@ struct SettingsView: View {
                     Form {
                         // Sound selection
                         Picker("Completion Sound", selection: $timerModel.selectedSound) {
-                            Text("Default").tag("Default")
-                            Text("Subtle").tag("Subtle")
-                            Text("Loud").tag("Loud")
-                            Text("Gentle").tag("Gentle")
+                            ForEach(soundNames, id: \.self) { sound in
+                                Text(sound).tag(sound)
+                            }
                         }
                         .pickerStyle(.menu)
                         .padding(.vertical, 4)
@@ -103,6 +103,10 @@ struct SettingsView: View {
             }
         }
         .frame(width: 400, height: 500)
+        .task {
+            // Load sound names asynchronously when view appears
+            soundNames = await SoundManager.shared.getAllSoundNames()
+        }
     }
 
     @Namespace private var namespace

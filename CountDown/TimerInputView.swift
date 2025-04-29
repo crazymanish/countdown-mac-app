@@ -27,7 +27,9 @@ struct TimerInputView: View {
                 }
                 .focused($isInputFieldFocused)
                 .onAppear {
-                    UNUserNotificationCenter.current().requestAuthorization(options: [.alert, .sound, .badge]) { _, _ in }
+                    Task {
+                        await requestNotificationPermission()
+                    }
                     isInputFieldFocused = true
                 }
                 // Handle keyboard shortcuts
@@ -77,6 +79,15 @@ struct TimerInputView: View {
             }
             .buttonStyle(.plain)
             .keyboardShortcut(.return, modifiers: [])
+        }
+    }
+    
+    private func requestNotificationPermission() async {
+        do {
+            let granted = try await UNUserNotificationCenter.current().requestAuthorization(options: [.alert, .sound, .badge])
+            print("Notification permission \(granted ? "granted" : "denied")")
+        } catch {
+            print("Error requesting notification permission: \(error)")
         }
     }
 }

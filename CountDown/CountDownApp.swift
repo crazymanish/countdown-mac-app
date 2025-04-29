@@ -3,7 +3,7 @@ import ServiceManagement
 
 @main
 struct CountDownApp: App {
-    private var timerModel = TimerModel()
+    @State private var timerModel = TimerModel()
     
     var body: some Scene {
         WindowGroup {
