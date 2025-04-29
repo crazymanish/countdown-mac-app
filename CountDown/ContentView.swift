@@ -18,7 +18,7 @@ struct ContentView: View {
                 .opacity(timerModel.backgroundOpacity)
                 .edgesIgnoringSafeArea(.all)
             
-            VStack(spacing: 4) {
+            VStack(spacing: 8) {
                 timerView
                 statusView
                 timerInputView
@@ -41,11 +41,11 @@ struct ContentView: View {
         // Timer display (horizontal progress bar instead of circle)
         VStack(spacing: 5) {
             // Time text
-            Text(formatTimeHorizontal(timerModel.timeRemaining))
-                .font(.system(size: 28, weight: .bold, design: .rounded))
+            Text(formatTimeDisplay(timerModel.timeRemaining))
+                .font(.system(size: 24, weight: .bold, design: .rounded))
                 .monospacedDigit()
                 .contentTransition(.numericText())
-                .animation(.spring(response: 0.4, dampingFraction: 0.8), value: timerModel.timeRemaining)
+                .animation(.spring(response: 0.4, dampingFraction: 1.0), value: timerModel.timeRemaining)
                 .scaleEffect(isTimerPulsing ? 1.25 : 1.0)
                 .animation(
                     timerModel.isRunning ?
@@ -117,7 +117,7 @@ struct ContentView: View {
     }
 
     private var timerInputView: some View {
-        HStack(spacing: 2) {
+        HStack(spacing: 8) {
             TextField("Duration (10m, 3pm, 1hr)", text: $timerModel.inputText)
                 .font(.system(size: 10))
                 .padding([.vertical, .horizontal], 2)
@@ -185,7 +185,7 @@ struct ContentView: View {
     }
 
     private var timerControlsView: some View {
-        HStack(spacing: 12) {
+        HStack(spacing: 8) {
             Button(action: {
                 withAnimation {
                     timerModel.toggleTimer()
@@ -265,44 +265,20 @@ struct ContentView: View {
         }
     }
 
-    // Helper functions for time formatting
-    private func formatTimeHorizontal(_ timeInterval: TimeInterval) -> String {
+    // Helper function for time formatting
+    private func formatTimeDisplay(_ timeInterval: TimeInterval) -> String {
         let totalSeconds = Int(timeInterval)
         let hours = totalSeconds / 3600
         let minutes = (totalSeconds % 3600) / 60
         let seconds = totalSeconds % 60
 
         if hours > 0 {
-            return String(format: "%d\u{202F}h %d\u{202F}m %d\u{202F}s", hours, minutes, seconds)
+            return String(format: "%02d h %02d m %02d s", hours, minutes, seconds)
         } else if minutes > 0 {
-            return String(format: "%d\u{202F}m %d\u{202F}s", minutes, seconds)
+            return String(format: "%02d m %02d s", minutes, seconds)
         } else {
-            return String(format: "%d\u{202F}s", seconds)
+            return String(format: "%02d s", seconds)
         }
-    }
-
-    private func formatHoursComponent(_ timeInterval: TimeInterval) -> String {
-        let totalSeconds = Int(timeInterval)
-        let hours = totalSeconds / 3600
-        return "\(hours)h"
-    }
-
-    private func formatMinutesComponent(_ timeInterval: TimeInterval) -> String {
-        let totalSeconds = Int(timeInterval)
-        let minutes = (totalSeconds % 3600) / 60
-
-        // For times less than an hour, just show minutes without "m" suffix
-        if totalSeconds < 3600 {
-            return "\(minutes)m"
-        } else {
-            return "\(minutes)m"
-        }
-    }
-
-    private func formatSecondsComponent(_ timeInterval: TimeInterval) -> String {
-        let totalSeconds = Int(timeInterval)
-        let seconds = totalSeconds % 60
-        return "\(seconds)s"
     }
 }
 
