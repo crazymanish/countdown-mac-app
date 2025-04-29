@@ -17,7 +17,8 @@ class TimerModel {
     var historyIndex: Int = -1
     var shouldFocusInput: Bool = true
     
-    private var timer: Timer?
+    private var timerTask: Task<Void, Never>?
+    private var isPaused = true // Track if timer is paused
     private var audioPlayer: AVAudioPlayer?
     private var soundOptions = ["Default", "Subtle", "Loud", "Gentle"]
     
@@ -29,11 +30,38 @@ class TimerModel {
     init() {
         // Initialize with default values
         loadSoundOptions()
+        // Initialize the timer task that will live throughout the app's lifecycle
+        createTimerTask()
     }
     
     private func loadSoundOptions() {
         // Get available sounds from SoundManager
         soundOptions = SoundManager.shared.getAllSoundNames()
+    }
+    
+    private func createTimerTask() {
+        // Only create a new task if one doesn't exist
+        guard timerTask == nil else { return }
+        
+        timerTask = Task {
+            while !Task.isCancelled {
+                if isRunning && timeRemaining > 0 {
+                    // Timer is running, update time
+                    if self.timeRemaining > 0.1 {
+                        self.timeRemaining -= 0.1
+                    } else {
+                        await MainActor.run {
+                            self.timerCompleted()
+                        }
+                    }
+                    // Sleep for 0.1 seconds
+                    try? await Task.sleep(nanoseconds: 100_000_000) // 0.1 seconds
+                } else {
+                    // Timer is paused, sleep briefly to avoid high CPU usage
+                    try? await Task.sleep(nanoseconds: 100_000_000) // 0.1 seconds
+                }
+            }
+        }
     }
     
     func startTimer() {
@@ -45,25 +73,13 @@ class TimerModel {
         isRunning = true
         shouldFocusInput = false // Turn off focus when timer starts
         
-        // Invalidate any existing timer
-        timer?.invalidate()
-        
-        // Create a new timer that fires every 0.1 seconds and add it to the main run loop
-        timer = Timer(timeInterval: 0.1, target: self, selector: #selector(updateTimer), userInfo: nil, repeats: true)
-        RunLoop.main.add(timer!, forMode: .common)
-    }
-    
-    @objc private func updateTimer() {
-        if self.timeRemaining > 0.1 {
-            self.timeRemaining -= 0.1
-        } else {
-            self.timerCompleted()
-        }
+        // Ensure timer task exists
+        createTimerTask()
     }
     
     func pauseTimer() {
         isRunning = false
-        timer?.invalidate()
+        // We don't cancel the task, just update the isRunning flag
     }
     
     func resetTimer() {
@@ -83,7 +99,6 @@ class TimerModel {
     func timerCompleted() {
         timeRemaining = 0
         isRunning = false
-        timer?.invalidate()
         completionMessage = "Countdown completed!"
         shouldFocusInput = true // Return focus to input field when timer completes
         
