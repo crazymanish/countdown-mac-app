@@ -15,7 +15,7 @@ class TimerModel {
     var selectedSound: String = "Default"
     var inputHistory: [String] = []
     var historyIndex: Int = -1
-    var shouldFocusInput: Bool = true // New property to control input field focus
+    var shouldFocusInput: Bool = true
     
     private var timer: Timer?
     private var audioPlayer: AVAudioPlayer?
@@ -26,28 +26,9 @@ class TimerModel {
     var backgroundOpacity: Double = 0.9
     var windowAlwaysOnTop: Bool = true
     
-    // For system integration
-    var showInDock: Bool = true
-    var showInMenuBar: Bool = true {
-        didSet {
-            if showInMenuBar {
-                setupMenuBarItem()
-            } else {
-                removeMenuBarItem()
-            }
-        }
-    }
-    
-    private var statusItem: NSStatusItem?
-    
     init() {
         // Initialize with default values
         loadSoundOptions()
-        
-        // Set up menu bar item if enabled
-        if showInMenuBar {
-            setupMenuBarItem()
-        }
     }
     
     private func loadSoundOptions() {
@@ -75,7 +56,6 @@ class TimerModel {
     @objc private func updateTimer() {
         if self.timeRemaining > 0.1 {
             self.timeRemaining -= 0.1
-            self.updateDockAndMenuBar()
         } else {
             self.timerCompleted()
         }
@@ -264,95 +244,6 @@ class TimerModel {
         
         let request = UNNotificationRequest(identifier: UUID().uuidString, content: content, trigger: nil)
         UNUserNotificationCenter.current().add(request)
-    }
-    
-    private func updateDockAndMenuBar() {
-        // Update dock icon badge if enabled
-        if showInDock {
-            updateDockIcon()
-        }
-        
-        // Update menu bar item if enabled
-        if showInMenuBar {
-            updateMenuBarItem()
-        }
-    }
-    
-    private func updateDockIcon() {
-        DispatchQueue.main.async {
-            if self.timeRemaining > 0 {
-                NSApplication.shared.dockTile.badgeLabel = self.formattedTime(self.timeRemaining)
-            } else {
-                NSApplication.shared.dockTile.badgeLabel = nil
-            }
-        }
-    }
-    
-    private func setupMenuBarItem() {
-        DispatchQueue.main.async {
-            // Remove existing status item if any
-            self.removeMenuBarItem()
-            
-            self.statusItem = NSStatusBar.system.statusItem(withLength: NSStatusItem.variableLength)
-            self.statusItem?.button?.title = "--:--"
-            
-            let menu = NSMenu()
-            
-            // Start/Pause item with target action
-            let startPauseItem = NSMenuItem(title: "Start/Pause", action: #selector(self.menuBarToggleTimer), keyEquivalent: "p")
-            startPauseItem.target = self
-            menu.addItem(startPauseItem)
-            
-            // Reset item with target action
-            let resetItem = NSMenuItem(title: "Reset", action: #selector(self.menuBarResetTimer), keyEquivalent: "r")
-            resetItem.target = self
-            menu.addItem(resetItem)
-            
-            menu.addItem(NSMenuItem.separator())
-            
-            // Quit item
-            let quitItem = NSMenuItem(title: "Quit", action: #selector(NSApplication.shared.terminate(_:)), keyEquivalent: "q")
-            menu.addItem(quitItem)
-            
-            self.statusItem?.menu = menu
-            
-            // Set initial value
-            self.updateMenuBarItem()
-        }
-    }
-    
-    // Action methods for menu bar items
-    @objc private func menuBarToggleTimer() {
-        toggleTimer()
-    }
-    
-    @objc private func menuBarResetTimer() {
-        resetTimer()
-    }
-    
-    private func updateMenuBarItem() {
-        DispatchQueue.main.async {
-            // Ensure the status item exists
-            if self.statusItem == nil && self.showInMenuBar {
-                self.setupMenuBarItem()
-                return
-            }
-            
-            if let button = self.statusItem?.button {
-                if self.timeRemaining > 0 {
-                    button.title = self.formattedTime(self.timeRemaining)
-                } else {
-                    button.title = "--:--"
-                }
-            }
-        }
-    }
-    
-    func removeMenuBarItem() {
-        if let statusItem = statusItem {
-            NSStatusBar.system.removeStatusItem(statusItem)
-            self.statusItem = nil
-        }
     }
     
     func formattedTime(_ timeInterval: TimeInterval) -> String {

@@ -6,7 +6,6 @@ import Observation
 struct SettingsView: View {
     @Environment(TimerModel.self) private var timerModel
     @Environment(\.dismiss) private var dismiss
-    @AppStorage("launchAtLogin") private var launchAtLogin = false
 
     // Animation states
     @State private var selectedTab = 0
@@ -73,23 +72,6 @@ struct SettingsView: View {
                     .formStyle(.grouped)
                     .tag(0)
 
-                    // Integration tab
-                    Form {
-                        // Launch at login option
-                        Toggle("Launch at Login", isOn: $launchAtLogin)
-                            .padding(.vertical, 4)
-
-                        // Show time in dock option
-                        Toggle("Show Countdown in Dock", isOn: $timerModel.showInDock)
-                            .padding(.vertical, 4)
-
-                        // Show time in menu bar option
-                        Toggle("Show Countdown in Menu Bar", isOn: $timerModel.showInMenuBar)
-                            .padding(.vertical, 4)
-                    }
-                    .formStyle(.grouped)
-                    .tag(1)
-
                     // Alerts tab
                     Form {
                         // Sound selection
@@ -103,7 +85,7 @@ struct SettingsView: View {
                         .padding(.vertical, 4)
                     }
                     .formStyle(.grouped)
-                    .tag(2)
+                    .tag(1)
                 }
                 .tabViewStyle(.automatic)
                 .animation(.spring(response: 0.3, dampingFraction: 0.7), value: selectedTab)
