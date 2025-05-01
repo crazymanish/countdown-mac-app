@@ -12,8 +12,8 @@ struct TimerView: View {
                 .monospacedDigit()
                 .contentTransition(.numericText())
                 .foregroundStyle(LinearGradient.appGradient)
-                .animation(.spring(response: 0.4, dampingFraction: 1.0), value: timerModel.timeRemaining)
-                .scaleEffect(isTimerPulsing ? 1.25 : 1.0)
+                .animation(.spring(response: 0.5, dampingFraction: 1.0), value: timerModel.timeRemaining)
+                .scaleEffect(isTimerPulsing ? 1.35 : 1.0)
                 .animation(
                     timerModel.isRunning ?
                     Animation.easeInOut(duration: 1.0).repeatForever(autoreverses: true) :
